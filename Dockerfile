@@ -1,10 +1,10 @@
 FROM alpine:3.23
 
 RUN apk add --no-cache \
-  postgresql18-client=18.1-r0 \
-  tzdata=2025c-r0 \
-  dcron=4.6-r0 \
-  bash=5.3.3-r1
+  postgresql18-client \
+  tzdata \
+  dcron \
+  bash
 
 WORKDIR /app
 
