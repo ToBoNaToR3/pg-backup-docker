@@ -1,0 +1,65 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "minimumReleaseAge": "1 day",
+  "timezone": "Europe/Berlin",
+  "schedule": ["before 6am"],
+  "docker": {
+    "pinDigests": true
+  },
+  "packageRules": [
+    {
+      "description": "Group GitHub Actions",
+      "groupName": "GitHub Actions",
+      "matchManagers": ["github-actions"]
+    },
+    {
+      "description": "Group Prettier across mise and workflows",
+      "groupName": "Prettier",
+      "matchPackageNames": ["prettier"],
+      "matchDatasources": ["npm"]
+    },
+    {
+      "description": "Group Commitlint packages",
+      "groupName": "Commitlint",
+      "matchPackagePatterns": ["^@commitlint/"]
+    },
+    {
+      "description": "Group PostgreSQL packages",
+      "groupName": "PostgreSQL",
+      "matchPackagePatterns": ["pgautoupgrade", "^postgresql.*-client$"],
+      "automerge": false
+    },
+    {
+      "description": "Group Alpine packages",
+      "groupName": "Alpine packages",
+      "matchManagers": ["dockerfile"],
+      "matchPackagePatterns": ["tzdata", "dcron", "bash"]
+    },
+    {
+      "description": "Automerge all non-major updates",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": [
+        "RUN apk add --no-cache\\s+(?<depName>\\S+)=(?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "repology",
+      "versioningTemplate": "loose"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.github/workflows/.+\\.ya?ml$"],
+      "matchStrings": [
+        "npm install -g (?<depName>[a-z0-9-]+)@(?<currentValue>[0-9.]+)",
+        "npm install -g (?<depName>[a-z0-9-]+)(?:\\s|$)"
+      ],
+      "datasourceTemplate": "npm"
+    }
+  ]
+}
