@@ -1,0 +1,7 @@
+[settings]
+npm.bun = true
+
+[tools]
+node = "24.12.0"
+bun = "1.3.5"
+"npm:prettier" = "3.7.4"

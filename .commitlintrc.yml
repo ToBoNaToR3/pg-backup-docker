@@ -1,0 +1,24 @@
+rules:
+  scope-empty:
+    - 2
+    - never
+  scope-enum:
+    - 2
+    - always
+    - - ci
+      - deps
+      - docker
+      - renovate
+      - repo
+  type-empty:
+    - 2
+    - never
+  type-enum:
+    - 2
+    - always
+    - - chore
+      - config
+      - doc
+      - feat
+      - fix
+      - revert
