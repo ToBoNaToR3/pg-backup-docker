@@ -1,14 +1,14 @@
 name: Docker Build
 
 on:
-  schedule:
-    - cron: "0 2 * * 1" # Every Monday at 2 AM UTC
   push:
-    branches: [main, master, develop]
+    branches:
+      - main
     tags:
       - "v*"
   pull_request:
-    branches: [main, master, develop]
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io
