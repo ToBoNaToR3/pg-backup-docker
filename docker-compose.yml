@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: pgautoupgrade/pgautoupgrade:18-alpine@sha256:f2e100537b3ef2225b506808d414d4e1839c2d14bbabb644ee48d18594fac620
+    image: pgautoupgrade/pgautoupgrade:18.1-alpine
     restart: unless-stopped
     networks:
       - db

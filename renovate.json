@@ -10,19 +10,34 @@
       "pinDigests": true
     },
     {
+      "matchManagers": ["docker-compose"],
+      "pinDigests": false
+    },
+    {
       "description": "Group Prettier across mise and workflows",
       "groupName": "Prettier",
       "matchPackageNames": ["prettier"],
       "automerge": true
     },
     {
-      "description": "Group PostgreSQL packages",
-      "groupName": "PostgreSQL",
-      "automerge": false,
-      "matchPackageNames": ["/pgautoupgrade/", "/^postgresql.*-client$/"]
+      "description": "Group PostgreSQL packages and disable major updates to avoid upgrading old versions in build matrix",
+      "groupName": "PostgreSQL major updates",
+      "matchPackageNames": [
+        "/pgautoupgrade/",
+        "/^postgresql.*-client$/",
+        "postgres"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     },
     {
-      "description": "Automerge all non-major updates",
+      "description": "Group non-major PostgreSQL updates",
+      "groupName": "PostgreSQL non-major updates",
+      "matchPackageNames": [
+        "/pgautoupgrade/",
+        "/^postgresql.*-client$/",
+        "postgres"
+      ],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
@@ -32,12 +47,24 @@
       "matchManagers": ["github-actions"],
       "automerge": true,
       "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "Automerge all non-major updates",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
     }
   ],
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "fileMatch": ["^\\.github/workflows/.+\\.ya?ml$"],
+      "matchStrings": ["postgres_version:\\s*\"(?<currentValue>[^\"]*)\""],
+      "depNameTemplate": "postgres",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/.+\\.ya?ml$"],
       "matchStrings": [
         "npm install -g (?<depName>[a-z0-9-]+)@(?<currentValue>[0-9.]+)"
       ],

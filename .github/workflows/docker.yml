@@ -1,6 +1,8 @@
 name: Docker Build
 
 on:
+  schedule:
+    - cron: "0 2 * * 1" # Every Monday at 2 AM UTC
   push:
     branches: [main, master, develop]
     tags:
@@ -14,13 +16,27 @@ env:
 
 jobs:
   build:
-    name: Build and Push Docker Image
+    name: Build postgres:${{ matrix.postgres_version }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - postgres_version: "18.1-alpine3.23"
+            is_latest: true
+          - postgres_version: "17.7-alpine3.23"
+            is_latest: false
+          - postgres_version: "16.11-alpine3.23"
+            is_latest: false
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set lowercase image name
+        id: image_name
+        run: echo "name=$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
@@ -33,19 +49,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix=main-,enable=${{ github.ref == 'refs/heads/main' }}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
-            type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') && !startsWith(github.ref, 'refs/tags/v0.') }}
+      - name: Generate all tags
+        id: final_tags
+        run: |
+          VERSION="${{ matrix.postgres_version }}"
+          MAJOR_MINOR=$(echo $VERSION | grep -oE '^[0-9]+\.[0-9]+')
+          MAJOR=$(echo $MAJOR_MINOR | cut -d. -f1)
+          ALPINE_VERSION=$(echo $VERSION | grep -oE 'alpine[0-9]+\.[0-9]+')
+          BASE="${{ env.REGISTRY }}/${{ steps.image_name.outputs.name }}"
+
+          TAGS=("${MAJOR}" "${MAJOR_MINOR}" "${MAJOR}-alpine" "${MAJOR_MINOR}-alpine" "${MAJOR}-${ALPINE_VERSION}" "${MAJOR_MINOR}-${ALPINE_VERSION}")
+
+          if [ "${{ matrix.is_latest }}" = "true" ]; then
+            TAGS+=("latest" "alpine")
+          fi
+
+          TAG_LIST=$(printf "${BASE}:%s," "${TAGS[@]}")
+          TAG_LIST=${TAG_LIST%,}
+          echo "list=${TAG_LIST}" >> $GITHUB_OUTPUT
+          echo "Generated tags:"
+          for tag in "${TAGS[@]}"; do
+            echo "  ${BASE}:${tag}"
+          done
 
       - name: Build and push
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -53,12 +78,8 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Test image
-        if: github.event_name == 'pull_request'
-        run: |
-          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }} --version || true
+          tags: ${{ steps.final_tags.outputs.list }}
+          build-args: |
+            POSTGRES_VERSION=${{ matrix.postgres_version }}
+          cache-from: type=gha,scope=postgres${{ matrix.postgres_version }}
+          cache-to: type=gha,mode=max,scope=postgres${{ matrix.postgres_version }}
