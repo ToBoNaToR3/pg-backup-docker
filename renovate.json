@@ -4,10 +4,11 @@
   "minimumReleaseAge": "1 day",
   "timezone": "Europe/Berlin",
   "schedule": ["before 6am"],
-  "docker": {
-    "pinDigests": true
-  },
   "packageRules": [
+    {
+      "matchCategories": ["docker"],
+      "pinDigests": true
+    },
     {
       "description": "Group Prettier across mise and workflows",
       "groupName": "Prettier",
@@ -17,8 +18,8 @@
     {
       "description": "Group PostgreSQL packages",
       "groupName": "PostgreSQL",
-      "matchPackagePatterns": ["pgautoupgrade", "^postgresql.*-client$"],
-      "automerge": false
+      "automerge": false,
+      "matchPackageNames": ["/pgautoupgrade/", "/^postgresql.*-client$/"]
     },
     {
       "description": "Automerge all non-major updates",
@@ -29,7 +30,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^\\.github/workflows/.+\\.ya?ml$"],
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
       "matchStrings": [
         "npm install -g (?<depName>[a-z0-9-]+)@(?<currentValue>[0-9.]+)"
       ],
