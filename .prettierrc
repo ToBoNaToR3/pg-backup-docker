@@ -1,19 +1,4 @@
 {
   "tabWidth": 2,
-  "useTabs": false,
-  "printWidth": 80,
-  "overrides": [
-    {
-      "files": ["*.md"],
-      "options": {
-        "bracketSpacing": false
-      }
-    },
-    {
-      "files": ["renovate.json"],
-      "options": {
-        "printWidth": 60
-      }
-    }
-  ]
+  "useTabs": false
 }
