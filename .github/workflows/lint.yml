@@ -18,7 +18,7 @@ jobs:
           node-version: 20
 
       - name: Install Prettier
-        run: npm install -g prettier
+        run: npm install -g prettier@3.7.4
 
       - name: Run Prettier
         run: prettier --check "**/*.{md,yml,yaml,json}"
@@ -37,8 +37,7 @@ jobs:
           node-version: 20
 
       - name: Install commitlint
-        run: |
-          npm install -g @commitlint/cli @commitlint/config-conventional
+        run: npm install -g commitlint@20.3.0
 
       - name: Validate PR commits
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
