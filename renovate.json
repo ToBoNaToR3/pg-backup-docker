@@ -25,6 +25,13 @@
       "description": "Automerge all non-major updates",
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
+    },
+    {
+      "description": "Update GitHub Actions",
+      "groupName": "GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "schedule": ["before 6am on monday"]
     }
   ],
   "customManagers": [
