@@ -1,8 +1,0 @@
-{
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    ":automergeMinor",
-    ":automergePatch",
-    "config:best-practices"
-  ]
-}
