@@ -10,7 +10,7 @@
       "pinDigests": true
     },
     {
-      "matchManagers": ["docker-compose"],
+      "matchManagers": ["docker-compose", "regex"],
       "pinDigests": false
     },
     {
