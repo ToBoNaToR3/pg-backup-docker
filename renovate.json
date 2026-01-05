@@ -4,54 +4,78 @@
   "minimumReleaseAge": "1 day",
   "timezone": "Europe/Berlin",
   "schedule": ["before 6am"],
+  "automerge": true,
   "packageRules": [
     {
-      "matchCategories": ["docker"],
-      "pinDigests": true
+      "description": "Disable auto-merge for major updates",
+      "automerge": false,
+      "matchUpdateTypes": ["major", "replacement"]
     },
     {
-      "matchManagers": ["docker-compose", "custom.regex"],
-      "pinDigests": false
+      "description": "Add renovate label to all updates by default",
+      "matchManagers": ["*"],
+      "addLabels": ["renovate"]
     },
     {
-      "description": "Group Prettier across mise and workflows",
-      "groupName": "Prettier",
-      "matchPackageNames": ["prettier"],
-      "automerge": true
-    },
-    {
-      "description": "Group PostgreSQL packages and disable major updates to avoid upgrading old versions in build matrix",
-      "groupName": "PostgreSQL major updates",
-      "matchPackageNames": [
-        "/pgautoupgrade/",
-        "/^postgresql.*-client$/",
-        "postgres"
-      ],
+      "description": "Label major updates",
       "matchUpdateTypes": ["major"],
-      "enabled": false
+      "addLabels": ["major"]
+    },
+    {
+      "description": "Label minor updates",
+      "matchUpdateTypes": ["minor"],
+      "addLabels": ["minor"]
+    },
+    {
+      "description": "Label patch updates",
+      "matchUpdateTypes": ["patch"],
+      "addLabels": ["patch"]
+    },
+    {
+      "groupName": "Docker digest pins",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["pinDigest"],
+      "pinDigests": true,
+      "addLabels": ["docker"]
+    },
+    {
+      "groupName": "Docker digest updates",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["digest"],
+      "pinDigests": true,
+      "addLabels": ["docker"]
+    },
+    {
+      "groupName": "PostgreSQL major updates",
+      "matchPackageNames": ["/postgres/", "/pgautoupgrade/"],
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["postgresql"]
     },
     {
       "description": "Group non-major PostgreSQL updates",
       "groupName": "PostgreSQL non-major updates",
-      "matchPackageNames": [
-        "/pgautoupgrade/",
-        "/^postgresql.*-client$/",
-        "postgres"
-      ],
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
+      "matchPackageNames": ["/postgres/", "/pgautoupgrade/"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "addLabels": ["postgresql"]
     },
     {
-      "description": "Update GitHub Actions",
+      "groupName": "Linters and formatters",
+      "matchPackageNames": ["commitlint ", "prettier"],
+      "addLabels": ["linters"]
+    },
+    {
       "groupName": "GitHub Actions",
       "matchManagers": ["github-actions"],
-      "automerge": true,
-      "schedule": ["before 6am on monday"]
+      "addLabels": ["ci"]
     },
     {
-      "description": "Automerge all non-major updates",
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
+      "groupName": "node",
+      "matchPackageNames": ["node"]
+    },
+    {
+      "description": "Do not pin digests for docker-compose and custom regex managers",
+      "matchManagers": ["docker-compose", "custom.regex"],
+      "pinDigests": false
     }
   ],
   "customManagers": [
