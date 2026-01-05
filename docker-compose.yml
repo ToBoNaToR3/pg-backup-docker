@@ -2,8 +2,6 @@ services:
   postgres:
     image: pgautoupgrade/pgautoupgrade:18.1-alpine
     restart: unless-stopped
-    networks:
-      - db
     volumes:
       - db:/var/lib/postgresql
     environment:
@@ -11,24 +9,19 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
-  db-backup:
-    build: tobonator/postgres-backup-docker
+  pg-backup:
+    image: ghcr.io/tobonator3/pg-backup-docker:18.1
     restart: unless-stopped
     depends_on:
-      - db
-    networks:
-      - db
+      - postgres
     volumes:
       - backups:/backup
     environment:
       - TZ=Europe/Berlin
       - BACKUP_SCHEDULE=0 3 * * *
-      - POSTGRES_HOST=db
+      - POSTGRES_HOST=postgres
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-
-networks:
-  db: { internal: true }
 
 volumes:
   backups:
