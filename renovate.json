@@ -49,7 +49,8 @@
       "groupName": "PostgreSQL major updates",
       "matchPackageNames": ["/postgres/", "/pgautoupgrade/"],
       "matchUpdateTypes": ["major"],
-      "addLabels": ["postgresql"]
+      "addLabels": ["postgresql"],
+      "enabled": false
     },
     {
       "description": "Group non-major PostgreSQL updates",
