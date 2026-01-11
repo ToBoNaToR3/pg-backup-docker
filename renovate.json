@@ -31,18 +31,25 @@
       "addLabels": ["patch"]
     },
     {
+      "description": "Label digest updates or pins",
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "addLabels": ["digest"]
+    },
+    {
+      "description": "Docker updates",
+      "matchDatasources": ["docker"],
+      "addLabels": ["docker"],
+      "pinDigests": true
+    },
+    {
       "groupName": "Docker digest pins",
       "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["pinDigest"],
-      "pinDigests": true,
-      "addLabels": ["docker"]
+      "matchUpdateTypes": ["pinDigest"]
     },
     {
       "groupName": "Docker digest updates",
       "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["digest"],
-      "pinDigests": true,
-      "addLabels": ["docker"]
+      "matchUpdateTypes": ["digest"]
     },
     {
       "groupName": "PostgreSQL major updates",
