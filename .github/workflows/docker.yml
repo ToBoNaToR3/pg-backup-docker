@@ -31,11 +31,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - postgres_version: "18.1-alpine3.23"
+          - postgres_version: "18.2-alpine3.23"
             is_latest: true
-          - postgres_version: "17.7-alpine3.23"
+          - postgres_version: "17.8-alpine3.23"
             is_latest: false
-          - postgres_version: "16.11-alpine3.23"
+          - postgres_version: "16.12-alpine3.23"
             is_latest: false
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
