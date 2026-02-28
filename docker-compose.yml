@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   pg-backup:
-    image: ghcr.io/tobonator3/pg-backup-docker:18.2
+    image: ghcr.io/tobonator3/pg-backup-docker:18.3
     restart: unless-stopped
     depends_on:
       - postgres
