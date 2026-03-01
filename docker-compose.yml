@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: pgautoupgrade/pgautoupgrade:18.2-alpine
+    image: pgautoupgrade/pgautoupgrade:18.3-alpine
     restart: unless-stopped
     volumes:
       - db:/var/lib/postgresql
