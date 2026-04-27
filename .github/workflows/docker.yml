@@ -15,6 +15,7 @@ on:
       - "Dockerfile"
       - "scripts/**"
       - ".github/workflows/docker.yml"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
